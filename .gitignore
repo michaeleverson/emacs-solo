@@ -21,6 +21,7 @@ var/
 /.mc-lists.el
 /.DS_Store
 /network-security.data
+/network-security.eld
 /.emacs.desktop
 /.emacs.desktop.lock
 /.watsonresults
@@ -63,9 +64,10 @@ custom-vars.el
 .nrewsrc.eld
 /newsticker
 .authinfo*
-private.el
 recentf.el*
 saveplace
 cert.pem
 multisession/
 projects.eld
+third/.DS_Store
+third/paredit/.DS_Store
