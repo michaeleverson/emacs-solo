@@ -388,18 +388,20 @@ It has effect when `tab-bar-tab-hints' is non-nil."
   (rcirc-default-nick "Lionyx")
   (rcirc-default-user-name "Lionyx")
   (rcirc-default-full-name "Lionyx")
-  (rcirc-server-alist `(("irc.libera.chat"
-                         :channels ("#emacs" "#systemcrafters")
-                         :port 6697
-                         :encryption tls)))
+  (rcirc-server-alist
+   '(("irc.libera.chat"
+      :port 6697
+      :encryption tls
+      :channels ("#emacs" "#systemcrafters"))))
   (rcirc-reconnect-delay 5)
   (rcirc-fill-column 100)
   (rcirc-track-ignore-server-buffer-flag t)
   :config
-  (setopt rcirc-authinfo
-          `(("irc.libera.chat" certfp
-             ,(expand-file-name "cert.pem" user-emacs-directory)
-             ,(expand-file-name "cert.pem" user-emacs-directory)))))
+  (setq rcirc-authinfo
+        `(("irc.libera.chat"
+           certfp
+           ,(expand-file-name "cert.pem" user-emacs-directory)
+           ,(expand-file-name "cert.pem" user-emacs-directory)))))
 
 
 ;;; ERC
@@ -2570,15 +2572,30 @@ Replacing `Git-' with a branch symbol."
   :defer t
   :init
   (defun emacs-solo/set-exec-path-from-shell-PATH ()
-    "Set up Emacs' `exec-path' and PATH environment the same as user Shell."
+    "Set up Emacs' `exec-path' and PATH environment the same as the user's shell.
+This works with bash, zsh, or fish)."
     (interactive)
-    (let ((path-from-shell
-           (replace-regexp-in-string
-            "[ \t\n]*$" "" (shell-command-to-string
-                            "$SHELL --login -c 'echo $PATH'"))))
-      (setenv "PATH" path-from-shell)
-      (setq exec-path (split-string path-from-shell path-separator))
-      (message ">>> emacs-solo: PATH loaded")))
+    (let* ((shell (getenv "SHELL"))
+           (shell-name (file-name-nondirectory shell))
+           (command
+            (cond
+             ((string= shell-name "fish")
+              "fish -c 'string join : $PATH'")
+             ((string= shell-name "zsh")
+              "zsh -i -c 'printenv PATH'")
+             ((string= shell-name "bash")
+              "bash --login -c 'echo $PATH'")
+             (t nil))))
+      (if (not command)
+          (message "emacs-solo: Unsupported shell: %s" shell-name)
+        (let ((path-from-shell
+               (replace-regexp-in-string
+                "[ \t\n]*$" ""
+                (shell-command-to-string command))))
+          (when (and path-from-shell (not (string= path-from-shell "")))
+            (setenv "PATH" path-from-shell)
+            (setq exec-path (split-string path-from-shell path-separator))
+            (message ">>> emacs-solo: PATH loaded from %s" shell-name))))))
 
   (defun emacs-solo/fix-asdf-path ()
     "Ensure asdf shims and active Node.js version's bin directory are first in PATH."
@@ -2667,7 +2684,7 @@ Opening and closing delimiters will have matching colors."
   (defvar emacs-solo-default-projects-folder "~/Projects"
     "Default folder to search for projects.")
 
-  (defvar emacs-solo-default-projects-input "**"
+  (defvar emacs-solo-default-projects-input ""
     "Default input to use when finding a project.")
 
   (defun emacs-solo/find-projects-and-switch (&optional directory)
@@ -2686,13 +2703,6 @@ Opening and closing delimiters will have matching colors."
               initial-input)))
         (when (and selected-project (file-directory-p selected-project))
           (project-switch-project selected-project)))))
-
-  (defun emacs-solo/minibuffer-move-cursor ()
-    "Move cursor between `*` characters when minibuffer is populated with `**`."
-    (when (string-prefix-p emacs-solo-default-projects-input (minibuffer-contents))
-      (goto-char (+ (minibuffer-prompt-end) 1))))
-
-  (add-hook 'minibuffer-setup-hook #'emacs-solo/minibuffer-move-cursor)
 
   :bind (:map project-prefix-map
               ("P" . emacs-solo/find-projects-and-switch)))
@@ -3279,7 +3289,7 @@ Windows are labeled starting from the top-left window and proceeding top to bott
       (message "Sending %s to 0x0.st..." temp-file)
       (let ((url (string-trim-right
                   (shell-command-to-string
-                   (format "curl -s -F'file=@%s' https://0x0.st" temp-file)))))
+                   (format "curl -A 'curl/7.68.8' -s -F'file=@%s' https://0x0.st" temp-file)))))
         (message "The URL is %s" url)
         (kill-new url)
         (delete-file temp-file))))
@@ -3289,7 +3299,7 @@ Windows are labeled starting from the top-left window and proceeding top to bott
     (message "Sending %s to 0x0.st..." file-path)
     (let ((url (string-trim-right
                 (shell-command-to-string
-                 (format "curl -s -F'file=@%s' https://0x0.st" (expand-file-name file-path))))))
+                 (format "curl -A 'curl/7.68.8' -s -F'file=@%s' https://0x0.st" (expand-file-name file-path))))))
       (message "The URL is %s" url)
       (kill-new url))))
 
