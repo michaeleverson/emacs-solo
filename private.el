@@ -33,11 +33,8 @@
 
   (add-hook 'flymake-mode-hook #'my/flymake-setup-key))
 
-(require 'geiser-guile)
-
-;;(with-eval-after-load 'eglot
-;;  (add-to-list 'eglot-server-programs
-;;               '((english-prose-mode :language-id "plaintext") . ("harper-ls" "--stdio"))))
-
 (require 'atomic-chrome)
+(setq atomic-chrome-debug t)
 (atomic-chrome-start-server)
+
+(provide 'private)
