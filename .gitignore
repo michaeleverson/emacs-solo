@@ -68,6 +68,8 @@ recentf.el*
 saveplace
 cert.pem
 multisession/
+private.el
 projects.eld
 third/.DS_Store
 third/paredit/.DS_Store
+tmp/
