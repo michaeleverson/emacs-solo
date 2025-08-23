@@ -33,8 +33,17 @@
 
   (add-hook 'flymake-mode-hook #'my/flymake-setup-key))
 
+
 (require 'atomic-chrome)
 (setq atomic-chrome-debug t)
 (atomic-chrome-start-server)
+
+(when (eq system-type 'darwin)
+    (setq mac-command-modifier 'super))
+
+(setq world-clock-list
+      '(("Australia/Canberra" "Canberra")
+        ("Asia/Singapore"    "Singapore")
+        ("Asia/Kolkata"      "Hyderabad")))
 
 (provide 'private)
