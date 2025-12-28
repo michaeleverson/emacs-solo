@@ -33,6 +33,9 @@
 
   (add-hook 'flymake-mode-hook #'my/flymake-setup-key))
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))))
 
 (require 'atomic-chrome)
 (setq atomic-chrome-debug t)
@@ -45,5 +48,9 @@
       '(("Australia/Canberra" "Canberra")
         ("Asia/Singapore"    "Singapore")
         ("Asia/Kolkata"      "Hyderabad")))
+
+(require 'geiser-guile)
+(require 'paredit)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
 (provide 'private)
