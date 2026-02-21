@@ -41,6 +41,10 @@
 
   (add-hook 'flymake-mode-hook #'my/flymake-setup-key))
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))))
+
 (when (eq system-type 'darwin)
     (setq mac-command-modifier 'super))
 
