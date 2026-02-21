@@ -86,8 +86,7 @@ If reset values are nil, nothing is reset."
       '(:eval
         (let ((project (project-current)))
           (if project
-              (concat "Emacs - [p] "
-                      (file-name-nondirectory (directory-file-name (project-root project))))
+              (concat "Emacs - [p] " (project-name project))
               (concat "Emacs - " (buffer-name))))))
 
 (when (eq system-type 'darwin)
@@ -100,6 +99,7 @@ If reset values are nil, nothing is reset."
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))
+(if (fboundp 'fringe-mode) (fringe-mode -1))
 
 
 ;; Avoid raising the *Messages* buffer if anything is still without
