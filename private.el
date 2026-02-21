@@ -8,8 +8,16 @@
       (normal-top-level-add-subdirs-to-load-path))))
 
 (with-eval-after-load 'emacs
+  ;; (pixel-scroll-precision-mode nil)
+  ;; (pixel-scroll-precision-use-momentum t)
   (keymap-global-set "C-x C-m" 'execute-extended-command)
-  (setq recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:" "^/var/folders/.*")))
+  (keymap-global-set "C-w" 'backward-kill-word)
+  (setq recentf-exclude (list "^/\\(?:ssh\\|su\\|sudo\\)?:" "^/var/folders/.*"))
+  ;; Assign Apple Color Emoji for the general emoji range
+  ;; Covers most pictographs, symbols, flags, etc.
+  (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil 'append)
+  ;; Rescale emoji font so it matches JetBrainsMono line height
+  (add-to-list 'face-font-rescale-alist '("Noto Color Emoji" . 0.8)))
 
 (with-eval-after-load 'org
   (add-hook 'org-mode-hook #'visual-line-mode)
@@ -33,11 +41,6 @@
 
   (add-hook 'flymake-mode-hook #'my/flymake-setup-key))
 
-
-(require 'atomic-chrome)
-(setq atomic-chrome-debug t)
-(atomic-chrome-start-server)
-
 (when (eq system-type 'darwin)
     (setq mac-command-modifier 'super))
 
@@ -45,5 +48,8 @@
       '(("Australia/Canberra" "Canberra")
         ("Asia/Singapore"    "Singapore")
         ("Asia/Kolkata"      "Hyderabad")))
+
+(require 'edit-server)
+(edit-server-start)
 
 (provide 'private)
